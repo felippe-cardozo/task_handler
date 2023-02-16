@@ -68,5 +68,4 @@ defmodule TaskHandler.ExecutionPlan do
   end
 
   defp handle_results(%{execution: execution}), do: execution
-  
 end

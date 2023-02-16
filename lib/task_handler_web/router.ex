@@ -7,5 +7,6 @@ defmodule TaskHandlerWeb.Router do
 
   scope "/api", TaskHandlerWeb do
     pipe_through :api
+    post "/execution_plans", ExecutionPlanController, :create
   end
 end

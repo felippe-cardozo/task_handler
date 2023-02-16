@@ -34,6 +34,7 @@ defmodule TaskHandler.MixProject do
   defp deps do
     [
       {:phoenix, "~> 1.6.15"},
+      {:tarams, "~> 1.0.0"},
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
       {:jason, "~> 1.2"},
