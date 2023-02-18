@@ -1,28 +1,16 @@
 defmodule TaskHandlerWeb.ExecutionPlanController do
   use TaskHandlerWeb, :controller
-  alias TaskHandler.ExecutionPlan
+  alias TaskHandler.ExecutionPlanService
   alias TaskHandler.Schemas.Task
   alias TaskManager.ExecutionPlanMapper
 
-  def create(conn, %{"tasks" => tasks} = params) do
-    try do
-      with {:ok, _} <- Tarams.cast(params, Task.api_schema()),
-           execution_plan <- ExecutionPlan.build(tasks) do
-        response_to_content_type(conn, execution_plan)
-      else
-        {:error, errors} ->
-          conn
-          |> put_status(400)
-          |> json(%{error: errors})
-      end
-    rescue
-      e in TaskHandler.Errors.CircularDependenciesError ->
-        conn
-        |> put_status(422)
-        |> json(%{error: e.message})
-
-      e ->
-        reraise e, __STACKTRACE__
+  def create(conn, params) do
+    with {:ok, %{tasks: tasks}} <- Tarams.cast(params, Task.api_in_schema()),
+         {:ok, execution_plan} <- ExecutionPlanService.call(tasks) do
+      response_to_content_type(conn, execution_plan)
+    else
+      {:error, errors} ->
+        handle_errors(conn, errors)
     end
   end
 
@@ -37,7 +25,19 @@ defmodule TaskHandlerWeb.ExecutionPlanController do
       _ ->
         conn
         |> put_status(201)
-        |> json(execution_plan)
+        |> json(ExecutionPlanMapper.to_external(execution_plan))
     end
+  end
+
+  defp handle_errors(conn, {:circular_dependencies_error, message}) do
+    conn
+    |> put_status(422)
+    |> json(%{error: message})
+  end
+
+  defp handle_errors(conn, errors) do
+    conn
+    |> put_status(400)
+    |> json(%{error: errors})
   end
 end

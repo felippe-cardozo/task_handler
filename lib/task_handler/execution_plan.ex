@@ -16,7 +16,10 @@ defmodule TaskHandler.ExecutionPlan do
     |> handle_results()
   end
 
-  defp add_to_execution(%{"requires" => dependencies} = task, tasks, execution) do
+  # when task has no depencies
+  defp add_to_execution(%{requires: nil} = task, _tasks, execution), do: add(task, execution)
+
+  defp add_to_execution(%{requires: dependencies} = task, tasks, execution) do
     # add all dependencies
     execution_with_dependencies =
       Enum.reduce(
@@ -36,9 +39,6 @@ defmodule TaskHandler.ExecutionPlan do
     add(task, execution_with_dependencies)
   end
 
-  # when task has no depencies
-  defp add_to_execution(task, _tasks, execution), do: add(task, execution)
-
   defp add_to_attempts(task, %{attempts: attempts} = execution_attempts) do
     Map.put(execution_attempts, :attempts, [task | attempts])
   end
@@ -52,7 +52,7 @@ defmodule TaskHandler.ExecutionPlan do
   end
 
   defp find_task(tasks, name) do
-    Enum.find(tasks, fn item -> item["name"] == name end)
+    Enum.find(tasks, fn item -> item.name == name end)
   end
 
   defp execution_completed?(tasks, %{execution: execution}) do

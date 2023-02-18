@@ -7,7 +7,14 @@ defmodule TaskHandler.Schemas.Task do
     }
   end
 
-  def api_schema do
+  def api_in_schema do
     %{tasks: [type: {:array, schema()}]}
+  end
+
+  def out_schema do
+    %{
+      name: [type: :string, required: true],
+      command: [type: :string, required: true]
+    }
   end
 end
