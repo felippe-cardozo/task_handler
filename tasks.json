@@ -1,0 +1,11 @@
+{
+  "tasks": [
+    {"name": "task_g", "command": "rm -r tmp", "requires": ["task_f"]},
+    {"name": "task_c", "command": "touch one_plus_one.exs", "requires": ["task_b"]},
+    {"name": "task_e", "command": "elixir one_plus_one.exs", "requires": ["task_d"]},
+    {"name": "task_b", "command": "cd tmp", "requires": ["task_a"]},
+    {"name": "task_f", "command": "cd ..", "requires": ["task_e"]},
+    {"name": "task_a", "command": "mkdir ./tmp"},
+    {"name": "task_d", "command": "echo 'IO.puts(1 + 1)' >> one_plus_one.exs", "requires": ["task_c"]}
+  ]
+}
