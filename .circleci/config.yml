@@ -1,0 +1,41 @@
+version: 2.1
+
+jobs:
+  test:
+    docker:
+      - image: cimg/elixir:1.14.2
+        environment:
+          MIX_ENV: test
+
+
+    working_directory: ~/task_handler
+
+    steps:
+      - checkout
+
+      - run:
+          name: Install hex / rebar / dependencies
+          command: |
+            mix local.hex --force
+            mix local.rebar --force
+            mix deps.get
+            mix deps.compile
+            mix compile
+
+      - run:
+          name: Run format checker
+          command: mix format --check-formatted
+
+      - run:
+          name: Run tests
+          command: mix test
+
+
+workflows:
+  version: 2
+  format_and_test:
+    jobs:
+      - test:
+          context:
+            - hex-auth
+          name: Test

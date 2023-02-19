@@ -7,6 +7,7 @@ defmodule TaskHandler.ExecutionPlanService do
     rescue
       e in TaskHandler.Errors.CircularDependenciesError ->
         {:error, {:circular_dependencies_error, e.message}}
+
       e ->
         reraise e, __STACKTRACE__
     end
